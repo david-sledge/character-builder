@@ -1,0 +1,60 @@
+`namespace|scalaioc.xml.element`
+`namespace x|scalaioc.xml`
+`namespace i|scalaioc`
+
+`#x|xml`(
+  dtd = "<!DOCTYPE html>",
+  `#html`(
+    xmlns = "http://www.w3.org/1999/xhtml",
+    `#head`(
+      `#title`("d20 Modern Character Manager"),
+      `#link`(rel = "stylesheet", href = "static/js/jquery-ui-1.12.1/jquery-ui.min.css"),
+      /*
+      `#style`(
+        example.Hello.pipeCharacters(
+          new java.io.InputStreamReader(`#i|$`[javax.servlet.ServletRequest]("req").getServletContext.getResourceAsStream("/WEB-INF/jquery-ui-1.12.1/jquery-ui.min.css"), "utf-8"),
+          `#i|$`("xmlWriter"),
+        ),
+      ),
+      // */
+      `#script`(
+        `type` = "text/javascript",
+        src = "static/js/jquery-ui-1.12.1/external/jquery/jquery.js",
+      ),
+      `#script`(
+        `type` = "text/javascript",
+        src = "static/js/jquery-ui-1.12.1/jquery-ui.min.js",
+      ),
+      `#script`(
+        `type` = "text/javascript",
+        src = "static/js/jquery.numeric.min.js",
+      ),
+      // */
+      /*
+      `#script`(
+        example.Hello.pipeCharacters(
+          new java.io.InputStreamReader(`#i|$`[javax.servlet.ServletRequest]("req").getServletContext.getResourceAsStream("/WEB-INF/jquery-ui-1.12.1/external/jquery/jquery.js"), "utf-8"),
+          `#i|$`("xmlWriter"),
+        ),
+        ";",
+        example.Hello.pipeCharacters(
+          new java.io.InputStreamReader(`#i|$`[javax.servlet.ServletRequest]("req").getServletContext.getResourceAsStream("/WEB-INF/jquery-ui-1.12.1/jquery-ui.min.js"), "utf-8"),
+          `#i|$`("xmlWriter"),
+        ),
+      ),
+      `#script`(
+        example.Hello.pipeCharacters(
+          new java.io.InputStreamReader(`#i|$`[javax.servlet.ServletRequest]("req").getServletContext.getResourceAsStream("/WEB-INF/ui.js"), "utf-8"),
+          `#i|$`("xmlWriter"),
+        ),
+      ),
+      // */
+      `#script`(
+        `type` = "text/javascript",
+        src = "static/js/ui.js?v=1",
+      ),
+    ),
+    `#body`(
+    ),// body
+  ),// html
+)// xml

@@ -1,0 +1,6 @@
+language: scala
+
+jdk: openjdk12
+
+scala:
+  - 2.13.2

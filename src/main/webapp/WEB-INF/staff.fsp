@@ -1,0 +1,12 @@
+`namespace|scalaioc`
+`namespace h|scalaioc.servlet.http`
+
+`#embed`("scala/ioc/servlet/http/macroDefs.fsp")
+`#embed`("scala/ioc/xml/macroDefs.fsp")
+
+"handler" `#=>` `#h|htmlResp`("/WEB-INF/hello.fsp")
+
+`#h|http`(
+  getHandler = `#ref`("handler"),
+  postHandler = `#ref`("handler"),
+)
