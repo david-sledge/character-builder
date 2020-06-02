@@ -140,10 +140,23 @@ function modifierDisplay() {
 
 }
 
-var adHocFixQueue = [];
+var adHocFixStack = [];
+
+// Inside table cells the min-width should be based on the content width.
+// However, the fill width should be based on the content plus borders and
+// padding. CSS does not have a way to accomplish this so this function
+// helps out.
+function adjustMinWidths() {
+
+    while (adHocFixStack.length > 0) {
+        $elem = adHocFixStack.pop();
+        $elem.css("min-width", parseInt($elem.css("min-width").slice(0, -2)) + $elem.outerWidth() - $elem.width() + "px");
+    }
+
+}
 
 function fitCell(elem) {
-    adHocFixQueue.push(elem);
+    adHocFixStack.push(elem);
     return elem.css({"box-sizing": "border-box", "min-width": elem.css("width"), "width": "100%"});
 }
 
@@ -161,7 +174,7 @@ function textArea(props) {
     return _("textarea", attrs);
 }
 
-function tableHeading(attrs, children) {
+function tableHeader(attrs, children) {
     return _("th", attrs, children).css({"vertical-align": "bottom"});
 }
 
@@ -302,6 +315,26 @@ var bonusTypeCalcFuncs = {
 };
 // */
 
+function propLoop(obj, f) {
+
+    for (var name in obj) {
+
+        f(name, obj[name]);
+
+    }
+
+}
+
+function indexLoop(arr, f) {
+
+    for (var ndx = 0; ndx < arr.length; ndx++) {
+
+        f(ndx, arr[ndx]);
+
+    }
+
+}
+
 function ranksDisplay() {
     return fitCell(wholeNumberDisplay());
 }
@@ -312,294 +345,377 @@ function languageField() {
 
 var skills = {
     "a": {
-        "name": "Autohypnosis",
-        "displayFunc": ranksDisplay
+        "name": "Autohypnosis"
     },
     "ba": {
-        "name": "Balance",
-        "displayFunc": ranksDisplay
+        "name": "Balance"
     },
     "bl": {
-        "name": "Bluff",
-        "displayFunc": ranksDisplay
+        "name": "Bluff"
     },
     "cl": {
-        "name": "Climb",
-        "displayFunc": ranksDisplay
+        "name": "Climb"
     },
     "com": {
-        "name": "Computer Use",
-        "displayFunc": ranksDisplay
+        "name": "Computer Use"
     },
     "con": {
-        "name": "Concentration",
-        "displayFunc": ranksDisplay
+        "name": "Concentration"
     },
     "cr-c": {
-        "name": "Craft (chemical)",
-        "displayFunc": ranksDisplay
+        "name": "chemical",
+        "group": "cr"
     },
     "cr-e": {
-        "name": "Craft (electronic)",
-        "displayFunc": ranksDisplay
+        "name": "electronic",
+        "group": "cr"
     },
     "cr-m": {
-        "name": "Craft (mechanical)",
-        "displayFunc": ranksDisplay
+        "name": "mechanical",
+        "group": "cr"
     },
     "cr-p": {
-        "name": "Craft (pharmaceutical)",
-        "displayFunc": ranksDisplay
+        "name": "pharmaceutical",
+        "group": "cr"
     },
     "cr-s": {
-        "name": "Craft (structural)",
-        "displayFunc": ranksDisplay
+        "name": "structural",
+        "group": "cr"
     },
     "cr-v": {
-        "name": "Craft (visual art)",
-        "displayFunc": ranksDisplay
+        "name": "visual art",
+        "group": "cr"
     },
     "cr-w": {
-        "name": "Craft (writing)",
-        "displayFunc": ranksDisplay
+        "name": "writing",
+        "group": "cr"
     },
     "dec": {
-        "name": "Decipher Script",
-        "displayFunc": ranksDisplay
+        "name": "Decipher Script"
     },
     "dem": {
-        "name": "Demolitions",
-        "displayFunc": ranksDisplay
+        "name": "Demolitions"
     },
     "dip": {
-        "name": "Diplomacy",
-        "displayFunc": ranksDisplay
+        "name": "Diplomacy"
     },
     "disa": {
-        "name": "Disable Device",
-        "displayFunc": ranksDisplay
+        "name": "Disable Device"
     },
     "disg": {
-        "name": "Disguise",
-        "displayFunc": ranksDisplay
+        "name": "Disguise"
     },
     "dr": {
-        "name": "Drive",
-        "displayFunc": ranksDisplay
+        "name": "Drive"
     },
     "e": {
-        "name": "Escape Artist",
-        "displayFunc": ranksDisplay
+        "name": "Escape Artist"
     },
     "f": {
-        "name": "Forgery",
-        "displayFunc": ranksDisplay
+        "name": "Forgery"
     },
     "ga": {
-        "name": "Gamble",
-        "displayFunc": ranksDisplay
+        "name": "Gamble"
     },
     "gi": {
-        "name": "Gather Information",
-        "displayFunc": ranksDisplay
+        "name": "Gather Information"
     },
     "ha": {
-        "name": "Handle Animal",
-        "displayFunc": ranksDisplay
+        "name": "Handle Animal"
     },
     "hi": {
-        "name": "Hide",
-        "displayFunc": ranksDisplay
+        "name": "Hide"
     },
     "int": {
-        "name": "Intimidate",
-        "displayFunc": ranksDisplay
+        "name": "Intimidate"
     },
     "inv": {
-        "name": "Investigate",
-        "displayFunc": ranksDisplay
+        "name": "Investigate"
     },
     "j": {
-        "name": "Jump",
-        "displayFunc": ranksDisplay
+        "name": "Jump"
     },
     "k-al": {
-        "name": "Knowledge (arcane lore)",
-        "displayFunc": ranksDisplay
+        "name": "arcane lore",
+        "group": "k"
     },
     "k-ar": {
-        "name": "Knowledge (art)",
-        "displayFunc": ranksDisplay
+        "name": "art",
+        "group": "k"
     },
     "k-bs": {
-        "name": "Knowledge (behavior sciences)",
-        "displayFunc": ranksDisplay
+        "name": "behavior sciences",
+        "group": "k"
     },
     "k-bu": {
-        "name": "Knowledge (business)",
-        "displayFunc": ranksDisplay
+        "name": "business",
+        "group": "k"
     },
     "k-ci": {
-        "name": "Knowledge (civics)",
-        "displayFunc": ranksDisplay
+        "name": "civics",
+        "group": "k"
     },
     "k-cu": {
-        "name": "Knowledge (current events)",
-        "displayFunc": ranksDisplay
+        "name": "current events",
+        "group": "k"
     },
     "k-e": {
-        "name": "Knowledge (earth and life sciences)",
-        "displayFunc": ranksDisplay
+        "name": "earth and life sciences",
+        "group": "k"
     },
     "k-h": {
-        "name": "Knowledge (history)",
-        "displayFunc": ranksDisplay
+        "name": "history",
+        "group": "k"
     },
     "k-ph": {
-        "name": "Knowledge (physical sciences)",
-        "displayFunc": ranksDisplay
+        "name": "physical sciences",
+        "group": "k"
     },
     "k-po": {
-        "name": "Knowledge (popular culture)",
-        "displayFunc": ranksDisplay
+        "name": "popular culture",
+        "group": "k"
     },
     "k-s": {
-        "name": "Knowledge (streetwise)",
-        "displayFunc": ranksDisplay
+        "name": "streetwise",
+        "group": "k"
     },
     "k-ta": {
-        "name": "Knowledge (tactics)",
-        "displayFunc": ranksDisplay
+        "name": "tactics",
+        "group": "k"
     },
     "k-te": {
-        "name": "Knowledge (technology)",
-        "displayFunc": ranksDisplay
+        "name": "technology",
+        "group": "k"
     },
     "k-th": {
-        "name": "Knowledge (theology and philosophy)",
-        "displayFunc": ranksDisplay
+        "name": "theology and philosophy",
+        "group": "k"
     },
     "l": {
-        "name": "Listen",
-        "displayFunc": ranksDisplay
+        "name": "Listen"
     },
     "m": {
-        "name": "Move Silently",
-        "displayFunc": ranksDisplay
+        "name": "Move Silently"
     },
     "n": {
-        "name": "Navigate",
-        "displayFunc": ranksDisplay
+        "name": "Navigate"
     },
     "pe-a": {
-        "name": "Perform (act)",
-        "displayFunc": ranksDisplay
+        "name": "act",
+        "group": "pe"
     },
     "pe-d": {
-        "name": "Perform (dance)",
-        "displayFunc": ranksDisplay
+        "name": "dance",
+        "group": "pe"
     },
     "pe-k": {
-        "name": "Perform (keyboards)",
-        "displayFunc": ranksDisplay
+        "name": "keyboards",
+        "group": "pe"
     },
     "pe-p": {
-        "name": "Perform (percussion instruments)",
-        "displayFunc": ranksDisplay
+        "name": "percussion instruments",
+        "group": "pe"
     },
     "pe-si": {
-        "name": "Perform (sing)",
-        "displayFunc": ranksDisplay
+        "name": "sing",
+        "group": "pe"
     },
     "pe-sta": {
-        "name": "Perform (stand-up)",
-        "displayFunc": ranksDisplay
+        "name": "stand-up",
+        "group": "pe"
     },
     "pe-str": {
-        "name": "Perform (stringed instruments)",
-        "displayFunc": ranksDisplay
+        "name": "stringed instruments",
+        "group": "pe"
     },
     "pe-w": {
-        "name": "Perform (wind instruments)",
-        "displayFunc": ranksDisplay
+        "name": "wind instruments",
+        "group": "pe"
     },
     "pi": {
-        "name": "Pilot",
-        "displayFunc": ranksDisplay
+        "name": "Pilot"
     },
     "pr": {
-        "name": "Profession",
-        "displayFunc": ranksDisplay
+        "name": "Profession"
     },
     "ps": {
-        "name": "Psicraft",
-        "displayFunc": ranksDisplay
+        "name": "Psicraft"
     },
     "rea": {
-        "name": "Read/Write Language",
-        "displayFunc": languageField
+        "name": "Read/Write Language"
     },
     "rep": {
-        "name": "Repair",
-        "displayFunc": ranksDisplay
+        "name": "Repair"
     },
     "res": {
-        "name": "Research",
-        "displayFunc": ranksDisplay
+        "name": "Research"
     },
     "ri": {
-        "name": "Ride",
-        "displayFunc": ranksDisplay
+        "name": "Ride"
     },
     "sea": {
-        "name": "Search",
-        "displayFunc": ranksDisplay
+        "name": "Search"
     },
     "sen": {
-        "name": "Sense Motive",
-        "displayFunc": ranksDisplay
+        "name": "Sense Motive"
     },
     "sl": {
-        "name": "Sleight of Hand",
-        "displayFunc": ranksDisplay
+        "name": "Sleight of Hand"
     },
     "spe": {
-        "name": "Speak Language",
-        "displayFunc": languageField
+        "name": "Speak Language"
     },
     "spel": {
-        "name": "Spellcraft",
-        "displayFunc": ranksDisplay
+        "name": "Spellcraft"
     },
     "spo": {
-        "name": "Spot",
-        "displayFunc": ranksDisplay
+        "name": "Spot"
     },
     "su": {
-        "name": "Survival",
-        "displayFunc": ranksDisplay
+        "name": "Survival"
     },
     "sw": {
-        "name": "Swim",
-        "displayFunc": ranksDisplay
+        "name": "Swim"
     },
     "tr": {
-        "name": "Treat Injury",
-        "displayFunc": ranksDisplay
+        "name": "Treat Injury"
     },
     "tu": {
-        "name": "Tumble",
-        "displayFunc": ranksDisplay
+        "name": "Tumble"
     },
     "u": {
-        "name": "Use Magic Device",
-        "displayFunc": ranksDisplay
+        "name": "Use Magic Device"
     }
 };
+
+// according to the ECMA specification order is neither guaranteed nor predictable.
+var skillOrder = [
+    "a",
+    "ba",
+    "bl",
+    "cl",
+    "com",
+    "con",
+    {
+        "group": "cr",
+        "name": "Craft",
+        "order": [
+            "cr-c",
+            "cr-e",
+            "cr-m",
+            "cr-p",
+            "cr-s",
+            "cr-v",
+            "cr-w"
+        ]
+    },
+    "dec",
+    "dem",
+    "dip",
+    "disa",
+    "disg",
+    "dr",
+    "e",
+    "f",
+    "ga",
+    "gi",
+    "ha",
+    "hi",
+    "int",
+    "inv",
+    "j",
+    {
+        "group": "k",
+        "name": "Knowledge",
+        "order": [
+            "k-al",
+            "k-ar",
+            "k-bs",
+            "k-bu",
+            "k-ci",
+            "k-cu",
+            "k-e",
+            "k-h",
+            "k-ph",
+            "k-po",
+            "k-s",
+            "k-ta",
+            "k-te",
+            "k-th"
+        ]
+    },
+    "l",
+    "m",
+    "n",
+    {
+        "group": "pe",
+        "name": "Perform",
+        "order": [
+            "pe-a",
+            "pe-d",
+            "pe-k",
+            "pe-p",
+            "pe-si",
+            "pe-sta",
+            "pe-str",
+            "pe-w"
+        ]
+    },
+    "pi",
+    {
+        "group": "pr",
+        "name": "Profession",
+        "order": [
+            "pr"
+        ]
+    },
+    "ps",
+    "rea",
+    "rep",
+    "res",
+    "ri",
+    "sea",
+    "sen",
+    "sl",
+    "spe",
+    "spel",
+    "spo",
+    "su",
+    "sw",
+    "tr",
+    "tu",
+    "u"
+];
+
+var skillGroups = {
+    "cr": function(text) {
+        return tx(text)
+    },
+    "k": function(text) {
+        return tx(text)
+    },
+    "pe": function(text) {
+        return tx(text)
+    },
+    "pr": function(text, button) {
+        return _("div", {}, [tx(text), button]).css({"white-space": "nowrap", "display": "inline-block"});
+    }
+}
+
+function skillNameLoop(f) {
+
+    propLoop(skills, function(name, skill) {
+
+        f(name, skill);
+
+    })
+
+}
 
 var classes = {
     "0": {
         "name": "Strong hero",
+        "type": "cls",
         "bab": bonusTypeCalcFuncs["bab"]["good"],
         "fort": bonusTypeCalcFuncs["fort"]["fair"],
         "ref": bonusTypeCalcFuncs["ref"]["poor"],
@@ -625,67 +741,113 @@ var classes = {
     }
 };
 
+function classNameLoop(f) {
+
+    propLoop(classes, function(name, cls) {
+
+        f(name, cls["name"], cls["bab"], cls["fort"], cls["ref"], cls["will"],
+            cls["def"], cls["rep"], cls["skill"], cls["skills"]);
+
+    })
+
+}
+
 var abilities = {
     "str" : {
         "getName": "getStr",
         "changeName": "strChange",
-        "label": "Str:"
+        "label": "Str"
     },
     "dex" : {
         "getName": "getDex",
         "changeName": "dexChange",
-        "label": "Dex:"
+        "label": "Dex"
     },
     "con" : {
         "getName": "getCon",
         "changeName": "conChange",
-        "label": "Con:"
+        "label": "Con"
     },
     "int" : {
         "getName": "getInt",
         "changeName": "intChange",
-        "label": "Int:"
+        "label": "Int"
     },
     "wis" : {
         "getName": "getWis",
         "changeName": "wisChange",
-        "label": "Wis:"
+        "label": "Wis"
     },
     "cha" : {
         "getName": "getCha",
         "changeName": "chaChange",
-        "label": "Cha:"
+        "label": "Cha"
     }
 };
 
-function nameLoop(f) {
+function abilityNameLoop(f) {
 
-    for (var name in abilities) {
+    propLoop(abilities, function(name, ability) {
 
-        var ability = abilities[name];
         f(name, ability["getName"], ability["changeName"], ability["label"]);
 
-    }
+    })
 
 }
 
-function rowFields() {
+var countProfessions;
 
+function newProfCells() {
+
+    return {
+        "rank": tableCell({}, skillRanksUi["display"]),
+        "cost": tableCell({}, skillRanksUi["field"])
+    };
+
+}
+
+function row() {
+
+    // character data from previous adjustments
     var source = null;
+    // next adjustments to which to feed character data
     var destination = null;
 
+    // triggers to be called by source when changes are made upstream
     var changeHandlers = {};
+    // getters and setters to be called by destination to get character data
     var accessors = {};
+    // triggers, getters, setters, and UI components for skill cells
+    var skillRanks = {
+        "changeRanks": {}
+    };
+
+    // UI for character class options with pre-populated values
+    var classOptions = [
+        _("option", {"value": ""}, [document.createTextNode("-- choose your path... --")]),
+        // this indicates a change due to something other than gaining a class
+        // level. Some examples are template applications, aging effects, and
+        // wish-increased ability scores. This is also used with LA buyoffs.
+        _("option", {"value": ""}, [document.createTextNode("off-level changes")])
+    ];
+
+    // add available character classes to selector
+    classNameLoop(function(name, className) {
+        classOptions.push(_("option", {"value": name}, [document.createTextNode(className)]));
+    });
+
+    // delete row button
+    var deleteUi = _("button", {}, "\u2297").css({"color": "red"});
 
     // editable fields -----------------------------------------------------
-    var deleteUi = _("button", {}, "\u2297").css({"color": "red"});
-    var classSelectUi = _("select", {}, [
-        _("option", {"value": ""}, [document.createTextNode("-- none --")]),
-        _("option", {"value": "0"}, [document.createTextNode("Strong hero")])
-    ]);
-    var classUi = classSelectUi;
+
+    // character class selector
+    var classUi = _("select", {}, classOptions);
+    // change in level adjustment text field
     var laChangeUi = fitCell(modifierField());
+    // free text describing adjustments to character
     var charAdjustUi = textArea().css({"vertical-align": "top"});
+    // ability score UI components, getters, setters, and listeners
     var abilityItems = {
         "str": {
             "listener" : null
@@ -710,7 +872,9 @@ function rowFields() {
             "listener" : null
         }
     };
+    // hit points rolled at this level UI
     var hpRollUi = fitCell(naturalNumberField()).css({"visibility": "hidden"});
+    // feats gained at this level/adjustment UI
     var featsUi = textArea();
     var specialAbilitiesUi = textArea();
     var bonusSkillPointsTextUi = fitCell(wholeNumberField());
@@ -752,7 +916,7 @@ function rowFields() {
 
     var abilityScoreCells = $();
 
-    nameLoop(function(name) {
+    abilityNameLoop(function(name) {
 
         var abilityItem = abilityItems[name];
         abilityItem["field"] = fitCell(modifierField());
@@ -799,26 +963,155 @@ function rowFields() {
     ).prop({
 
         "changeHandlers": changeHandlers,
-        "accessors": accessors
+        "accessors": accessors,
+        "skillRanks": skillRanks
 
     });
 
+    var subSkillCells = [];
     var skillRanksUis = {};
 
-    for (var name in skills) {
+    $rowUi.prop("addSubSkill", function() {
+        return function(name) {
 
-        skillRanksUis[name] = {
-            "display": skills[name]["displayFunc"](),
-            "field": fitCell(wholeNumberField())
+            var skillRanksUi = skillRanksUis[name];
+            var ndx = skillRanksUi.length;
+            var changeRanks = skillRanks["changeRanks"][name];
+            var ranksUi = {
+                "display": ranksDisplay(),
+                "field": fitCell(wholeNumberField())
+            };
+            skillRanksUi[ndx] = ranksUi;
+            subSkillCells[ndx] = [
+                tableCell({}, ranksUi["display"]),
+                tableCell({}, ranksUi["field"])
+            ];
+
+            if (accessors["getClassAndCharacterLevel"]) {
+
+                var classAndCharacterLevel = accessors["getClassAndCharacterLevel"]();
+
+                if (classAndCharacterLevel["characterLevel"] > 0) {
+
+                    var isClassSkill = classes[classAndCharacterLevel["lastClass"]]["skills"].includes(name);
+                    ranksUi["field"][isClassSkill ? "addClass" : "removeClass"]("cl-skill");
+                    ranksUi["field"][isClassSkill ? "removeClass" : "addClass"]("cc-skill");
+
+                }
+                else {
+
+                    ranksUi["field"]["removeClass"]("cl-skill");
+                    ranksUi["field"]["removeClass"]("cc-skill");
+
+                }
+
+            }
+
+            if (ndx == 0) {
+
+                $rowUi.append(subSkillCells[ndx]);
+
+            }
+            else {
+                subSkillCells[ndx - 1][1].after(subSkillCells[ndx]);
+            }
+
+            changeRanks[ndx] = function() {
+
+                var ranks = skillRanks["getTotalRanks"](name, ndx);
+                ranksUi["display"].empty();
+
+                if (ranks > 0) {
+                    appendText(ranksUi["display"], ranks);
+                }
+
+                if (destination) {
+                    destination["skillRanks"]["changeRanks"][name][ndx]();
+                }
+
+            };
+
+            ranksUi["field"].change(function() {
+
+                changeRanks[ndx]();
+                changeHandlers["skillPointsChange"]();
+
+            });
+
+            if (destination) {
+                destination["addSubSkill"](name);
+            }
+        };
+    });
+
+    $rowUi.prop("removeSubSkill", function() {
+        return function(name, ndx) {
+
+            var cells = subSkillCells.splice(ndx, 1)[0];
+            cells[0].remove();
+            cells[1].remove();
+            cells = skillRanksUis[name].splice(ndx, 1)[0];
+            changeHandlers["skillPointsChange"]();
+
+            if (destination) {
+                destination["removeSubSkill"](name, ndx);
+            }
+
         };
 
-        var fields = [
-            tableCell({}, skillRanksUis[name]["display"]),
-            tableCell({}, skillRanksUis[name]["field"])
-        ];
-        $rowUi.append(fields);
+    });
 
-    }
+    skillNameLoop(function(name) {
+
+        if (name == "pr") {
+
+            skillRanksUis[name] = [];
+            skillRanks["changeRanks"][name] = [];
+
+            for (var ndx = 0; ndx < countProfessions(); ndx++) {
+
+                $rowUi.prop("addSubSkill")(name);
+
+            }
+
+        }
+        else {
+
+            var skillRanksUi = {
+                    "display": (name == "rea" || name == "spe" ? languageField: ranksDisplay)(),
+                    "field": fitCell(wholeNumberField())
+                };
+            skillRanksUis[name] = skillRanksUi;
+
+            $rowUi.append(tableCell({}, skillRanksUi["display"]),
+                    tableCell({}, skillRanksUi["field"]));
+
+            skillRanks["changeRanks"][name] = (
+                name == "rea" || name == "spe" ?
+                function() {} :
+                function() {
+                    var ranks = skillRanks["getTotalRanks"](name);
+                    skillRanksUi["display"].empty();
+
+                    if (ranks > 0) {
+                        appendText(skillRanksUi["display"], ranks);
+                    }
+
+                    if (destination) {
+                        destination["skillRanks"]["changeRanks"][name]();
+                    }
+                });
+
+            skillRanksUi["field"].change(function() {
+
+                skillRanks["changeRanks"][name]();
+                changeHandlers["skillPointsChange"]();
+
+            });
+
+        }
+
+    });
 
     var rowUi = $rowUi[0];
 
@@ -851,7 +1144,7 @@ function rowFields() {
         var characterLevel = 0;
         var firstClass = levels["firstClass"];
 
-        for (var name in classLevels) {
+        propLoop(classLevels, function(name, classLevel) {
 
             characterLevel += classLevels[name];
 
@@ -861,7 +1154,7 @@ function rowFields() {
 
             }
 
-        }
+        });
 
         return {
 
@@ -886,7 +1179,7 @@ function rowFields() {
         // TODO
     }
 
-    nameLoop(function(name, getName, changeName) {
+    abilityNameLoop(function(name, getName, changeName) {
 
         var abilityItem = abilityItems[name];
         var field = abilityItem["field"];
@@ -1003,38 +1296,90 @@ function rowFields() {
         return points;
     }
 
-    accessors["getUnspentSkillPoints"] = function() {
+    function getUnspentSkillPoints() {
 
         var remainPoints = accessors["getTotalSkillPoints"]() -
             source["accessors"]["getTotalSkillPoints"]();
 
-        for (var name in skillRanksUis) {
-            var spent = parseInt(val(skillRanksUis[name]["field"]));
+        propLoop(skillRanksUis, function(name, skillRanksUi) {
 
-            if (isNaN(spent)) {
-                spent = 0;
+            function f(ranksUi) {
+
+                var spent = parseInt(val(ranksUi["field"]));
+
+                if (isNaN(spent)) {
+                    spent = 0;
+                }
+
+                remainPoints -= spent;
+
             }
 
-            remainPoints -= spent;
-        }
+            if (Array.isArray(skillRanksUi)) {
+
+                indexLoop(skillRanksUi, function(ndx, ranksUi) {
+
+                    f(ranksUi);
+
+                });
+
+            }
+            else {
+
+                f(skillRanksUi);
+
+            }
+
+        });
 
         return remainPoints;
 
     }
 
+    skillRanks["getTotalRanks"] = function(name, ndx) {
+
+        var remainPoints = accessors["getTotalSkillPoints"]();
+        var ranks = source["skillRanks"]["getTotalRanks"](name, ndx);
+        var field = Array.isArray(skillRanksUis[name])
+            ? skillRanksUis[name][ndx]["field"]
+            : skillRanksUis[name]["field"];
+        var spent = parseInt(val(field));
+
+        if (isNaN(spent) || spent == 0) {
+            return ranks;
+        }
+
+        // last class has it as a class skill?
+        var lastClass = accessors["getClassAndCharacterLevel"]()["lastClass"];
+
+        return ranks + (spent / (lastClass == null || classes[lastClass]["skills"].includes(name) ? 1 : 2.0));
+
+    }
+
     deleteUi.click(function() {
 
-        var dest = destination;
+        var dest = destination || source["changeHandlers"] ? destination : row();
+
+        if (!(destination || source["changeHandlers"])) {
+
+            $rowUi.after(dest);
+            adjustMinWidths();
+
+        }
+
         $rowUi.remove();
-        source["accessors"]["setDestination"](destination);
+        source["accessors"]["setDestination"](dest);
         source = null;
         destination = null;
 
         if (dest) {
 
-            for (var name in dest["changeHandlers"]) {
-                dest["changeHandlers"][name]();
-            }
+            propLoop(dest["changeHandlers"], function(name, chgHandler) {
+
+                chgHandler();
+
+            });
+
         }
 
     });
@@ -1137,37 +1482,57 @@ function rowFields() {
 
             var classSkills = classes[classAndCharacterLevel["lastClass"]]["skills"];
 
-            for (var name in skillRanksUis) {
+            propLoop(skillRanksUis, function(name, skillRanksUi) {
 
                 var isClassSkill = classSkills.includes(name);
-                skillRanksUis[name]["field"][isClassSkill ? "addClass" : "removeClass"]("cl-skill");
-                skillRanksUis[name]["field"][isClassSkill ? "removeClass" : "addClass"]("cc-skill");
+                function f(ranksUi) {
 
-            }
+                    ranksUi["field"][isClassSkill ? "addClass" : "removeClass"]("cl-skill");
+                    ranksUi["field"][isClassSkill ? "removeClass" : "addClass"]("cc-skill");
 
-//            for (var ndx = 0; ndx < classSkills.length; ndx++) {
-//                console.log(classSkills[ndx]);
-//                skillRanksUis[classSkills[ndx]]["field"].val("1");
-//            }
+                }
 
-//            for (var name in skillRanksUis) {
-//                var spent = parseInt(val(skillRanksUis[name]["field"]));
-//
-//                if (isNaN(spent)) {
-//                    spent = 0;
-//                }
-//
-//                remainPoints -= spent;
-//            }
+                if (Array.isArray(skillRanksUi)) {
+
+                    indexLoop(skillRanksUi, function(ndx, ranksUi) {
+
+                        f(ranksUi);
+
+                    });
+
+                }
+                else {
+
+                    f(skillRanksUi);
+
+                }
+
+            });
 
         }
         else {
 
-            for (var name in skillRanksUis) {
+            function f(ranksUi) {
 
-                skillRanksUis[name]["field"]["removeClass"]("cc-skill");
+                ranksUi["field"]["removeClass"]("cl-skill");
+                ranksUi["field"]["removeClass"]("cc-skill");
 
             }
+
+            propLoop(skillRanksUis, function(name, skillRanksUi) {
+
+                if (Array.isArray(skillRanksUi)) {
+
+                    indexLoop(skillRanksUi, function(ndx, ranksUi) {
+                        f(ranksUi);
+                    });
+
+                }
+                else {
+                    f(skillRanksUi);
+                }
+
+            });
 
         }
 
@@ -1184,6 +1549,21 @@ function rowFields() {
 
         // recalculate skill points
         changeHandlers["skillPointsChange"]();
+
+        propLoop(skillRanks["changeRanks"], function(name, changeRank) {
+
+            if (Array.isArray(changeRank)) {
+
+                indexLoop(changeRank, function(ndx, chgRank) {
+                    chgRank();
+                });
+
+            }
+            else {
+                changeRank();
+            }
+
+        });
 
     }, classUi, "classChange");
 
@@ -1216,9 +1596,7 @@ function rowFields() {
 
             var totalHp = 0;
 
-            for (var ndx = 0; ndx < hpRolls.length; ndx++) {
-
-                var hpRoll = hpRolls[ndx];
+            indexLoop(hpRolls, function(ndx, hpRoll) {
 
                 if (!isNaN(hpRoll)) {
 
@@ -1233,7 +1611,7 @@ function rowFields() {
 
                 }
 
-            }
+            });
 
             if (totalHp > 0) {
                 appendText(hpTotalDisplay, totalHp);
@@ -1254,7 +1632,7 @@ function rowFields() {
             appendText(totalSkillPointsDisplay, skillPoints);
         }
 
-        var unspentPoints = accessors["getUnspentSkillPoints"]();
+        var unspentPoints = getUnspentSkillPoints();
         unspentSkillPointsDisplay.empty();
 
         if (unspentPoints != 0) {
@@ -1268,11 +1646,7 @@ function rowFields() {
 
     }, bonusSkillPointsUi, "skillPointsChange");
 
-    for (var name in skillRanksUis) {
-        skillRanksUis[name]["field"].change(changeHandlers["skillPointsChange"]);
-    }
-
-    // skill points
+    // row reordering
     changeHandlers["orderChange"] = function() {
 
         var sourceIsOdd = $(source).hasClass("odd");
@@ -1292,8 +1666,6 @@ function rowFields() {
 
             source = newSource;
             $rowUi.css({"cursor": "move"});
-            // this row can be deleted if there is at least one other beyond the racial adjustment row
-            deleteUi.css({"visibility": destination || source["changeHandlers"] ? "" : "hidden"});
 
         }
 
@@ -1309,8 +1681,6 @@ function rowFields() {
             destination["accessors"]["setSource"](rowUi);
         }
 
-        deleteUi.css({"visibility": destination || source["changeHandlers"] ? "" : "hidden"});
-
     };
 
     accessors["getDestination"] = function() {return destination;};
@@ -1320,6 +1690,28 @@ function rowFields() {
 }
 
 $(document).ready(function() {
+
+    var scrollbarHeight = (function getScrollBarHeight () {
+        var inner = _("p").css({"width": "200px", "height": "100%"});
+
+        var outer = _("div", {}, inner).css({
+            "position": "absolute",
+            "top": 0,
+            "left": 0,
+            "visibility": "hidden",
+            "width": 150,
+            "height": 200,
+            "overflow": "hidden"});
+
+        $(document.body).append(outer);
+        var w1 = inner.outerHeight();
+        outer.css("overflow", 'scroll');
+        var w2 = inner.outerHeight();
+
+        outer.remove();
+
+        return (w1 - w2);
+    })();
 
     $(document.documentElement).css({"height": "100%"});
 
@@ -1340,14 +1732,14 @@ $(document).ready(function() {
 
         var points = 0;
 
-        nameLoop(function(name) {
+        abilityNameLoop(function(name) {
             points += pointSpent(parseInt(startScores[name]["field"].val()));
         });
 
         return points;
     }
 
-    nameLoop(function(name, getName, changeName) {
+    abilityNameLoop(function(name, getName, changeName) {
 
         var startAbility = startScores[name] = {};
         var field = startAbility["field"] = abilityScoreField();
@@ -1374,152 +1766,217 @@ $(document).ready(function() {
         textField(),
         tx("Player:"),
         textField(),
-        _("br"),
-        tx("Starting Scores:"),
-        _("br")
+        tx("Starting Scores:")
     ]).css({"flex": "0 1 auto"});
 
-    nameLoop(function(name, getName, changeName, label) {
-        header.append(tx(label), startScores[name]["field"]);
+    abilityNameLoop(function(name, getName, changeName, label) {
+        header.append(tx(label + ":"), startScores[name]["field"]);
     });
 
     header.append(tx("Points Spent:"), ptsSpent);
     // header complete! --------------------------------------------------------
 
     // body (contains table) ---------------------------------------------------
-    // table heading -----------------------------------------------------------
-    var addProfessionButton = _("button", {}, "\u2295").css({"color": "green", "padding": "0px"});
-    var removeProfessionButton = _("button", {}, "\u2297").css({"color": "red", "padding": "0px"});
+    // table header --------------------------------------------------------
+    var skillsHeader = tableHeader({"colspan": Object.keys(skills).length * 2}, tx("Skills (rank/point cost)"));
+    var headerRow1 = [
+        tableHeader({"rowspan": "3"}, tx("")),
+        tableHeader({"rowspan": "3"}, tx("Class")),
+        tableHeader({"colspan": "5"}, tx("Levels")),
+        tableHeader({"rowspan": "3"}, tx("Adjustments")),
+        tableHeader({"colspan": "12", "rowspan": "2"}, tx("Ability Scores, Increases, and Decreases")),
+        tableHeader({"colspan": "2", "rowspan": "2"}, tx("Hit Points")),
+        tableHeader({"rowspan": "3"}, tx("Feats")),
+        tableHeader({"rowspan": "3"}, tx("Special Abilities")),
+        tableHeader({"colspan": "6"}, tx("Bonuses")),
+        tableHeader({"rowspan": "2", "colspan": "3"}, tx("Skill Points"))
+    ];
+
+    var firstSkillCol = 0;
+
+    indexLoop(headerRow1, function(ndx, headRow) {
+
+        var colspan = parseInt(headRow.attr("colspan"));
+
+        if (!(colspan > 1)) {
+            colspan = 1;
+        }
+
+        firstSkillCol += colspan;
+
+    });
+
+    headerRow1.push(skillsHeader);
+
+    var headerRow2 = [
+        tableHeader({"rowspan": "2"}, tx("Class")),
+        tableHeader({"rowspan": "2"}, tx("Character")),
+        tableHeader({"colspan": "2"}, tx("Adjust")),
+        tableHeader({"rowspan": "2"}, tx("EC")),
+        tableHeader({"rowspan": "2"}, tx("Atk")),
+        tableHeader({"colspan": "3"}, tx("Saves")),
+        tableHeader({"rowspan": "2"}, tx("Def")),
+        tableHeader({"rowspan": "2"}, tx("Rep"))
+    ];
+    var headerRow3 = [
+        tableHeader({}, tx("Total")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Str")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Dex")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Con")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Int")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Wis")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Cha")),
+        tableHeader({}, tx("\u0394")),
+        tableHeader({}, tx("Roll")),
+        tableHeader({}, tx("Total")),
+        tableHeader({}, tx("Fort")),
+        tableHeader({}, tx("Ref")),
+        tableHeader({}, tx("Will")),
+        tableHeader({}, tx("Bonus")),
+        tableHeader({}, tx("Total")),
+        tableHeader({}, tx("Unspent"))
+    ];
+
+    var skillHeaderGroups = {};
+    var professionHeader;
+
+    function profHeader() {
+
+        var removeProfessionButton = _("button", {}, "\u2297").css({
+            "color": "red",
+            "padding": "0px"
+        });
+
+        var tHeader = tableHeader({"colspan": "2"},
+                [_("div", {}, [
+                    removeProfessionButton,
+                    textField().css({"width": "6em"})
+                ]).css({"white-space": "nowrap", "display": "inline-block"})]
+            );
+
+        removeProfessionButton.click(function() {
+
+            if (professionHeaders.length == 1) {
+                addProfessionButton.click();
+            }
+
+            var ndx = professionHeaders.indexOf(tHeader);
+            destination.removeSubSkill("pr", ndx);
+            var cells = profCells.splice(ndx, 1)[0];
+            cells["rank"].remove();
+            cells["cost"].remove();
+            var profHeader = professionHeaders.splice(ndx, 1)[0];
+            profHeader.remove();
+            var colspan = parseInt(skillsHeader.attr("colspan"));
+            skillsHeader.attr("colspan", colspan - 2);
+            colspan = parseInt(professionHeader.attr("colspan"));
+            professionHeader.attr("colspan", colspan - 2);
+        });
+
+        return tHeader;
+
+    }
+
+    var professionHeaders = [profHeader()];
+
+    var addProfessionButton = _("button", {}, "\u2295").css({
+        "color": "green",
+        "padding": "0px"
+    }).click(function() {
+
+        var colspan = parseInt(professionHeader.attr("colspan"));
+        professionHeader.attr("colspan", colspan + 2);
+        colspan = parseInt(skillsHeader.attr("colspan"));
+        skillsHeader.attr("colspan", colspan + 2);
+        professionHeaders.push(profHeader());
+        professionHeaders[professionHeaders.length - 2].after(professionHeaders[professionHeaders.length - 1]);
+        var newCells = {
+            "rank": tableCell({}, appendText(wholeNumberDisplay(), "\u2211")),
+            "cost": tableCell({}, appendText(wholeNumberDisplay(), "$"))
+        };
+        profCells.push(newCells);
+        profCells[profCells.length - 2]["cost"].after(newCells["rank"], newCells["cost"]);
+        makeSticky(professionHeaders[professionHeaders.length - 1]);
+        makeSticky(newCells["rank"]);
+        makeSticky(newCells["cost"]);
+        destination["addSubSkill"]("pr");
+        adjustMinWidths();
+
+    });
+
+    indexLoop(skillOrder, function(ndx, item) {
+
+        if (typeof item == "string") {
+
+            var skill = skills[item];
+            headerRow2.push(tableHeader({"rowspan": "2", "colspan": "2"}, tx(skill["name"])));
+
+        }
+        else {
+
+            var groupName = item["group"];
+            var groupText = item["name"];
+            var groupedSkills = item["order"];
+
+            indexLoop(groupedSkills, function(ndx, skill) {
+
+                if (skillHeaderGroups[groupName]) {
+
+                    skillHeaderGroups[groupName]["colspan"] += 2;
+
+                }
+                else {
+
+                    skillHeaderGroups[groupName] = {
+                        "header": tableHeader({}, skillGroups[groupName](groupText, addProfessionButton)),
+                        "colspan": 2
+                    };
+                    headerRow2.push(skillHeaderGroups[groupName]["header"]);
+
+                }
+
+                headerRow3.push(
+                    groupName == "pr"
+                        ? professionHeaders[0]
+                        : tableHeader({"colspan": "2"}, tx(skills[skill]["name"]))
+                );
+
+                if (groupName == "pr") {
+
+                    professionHeader = skillHeaderGroups[groupName]["header"];
+
+                }
+
+            });
+
+        }
+
+    });
+
+    for (var name in skillHeaderGroups) {
+
+        var skillHeaderGroup = skillHeaderGroups[name];
+        skillHeaderGroup["header"].attr("colspan", skillHeaderGroup["colspan"]);
+
+    }
 
     var tableHead = _("thead", {}, [
-        _("tr", {}, [
-            tableHeading({"rowspan": "3"}, tx("")),
-            tableHeading({"rowspan": "3"}, tx("Class")),
-            tableHeading({"colspan": "5"}, tx("Levels")),
-            tableHeading({"rowspan": "3"}, tx("Adjustments")),
-            tableHeading({"colspan": "12", "rowspan": "2"}, tx("Ability Scores, Increases, and Decreases")),
-            tableHeading({"colspan": "2", "rowspan": "2"}, tx("Hit Points")),
-            tableHeading({"rowspan": "3"}, tx("Feats")),
-            tableHeading({"rowspan": "3"}, tx("Special Abilities")),
-            tableHeading({"colspan": "6"}, tx("Bonuses")),
-            tableHeading({"rowspan": "2", "colspan": "3"}, tx("Skill Points")),
-            tableHeading({"colspan": "142"}, tx("Skills (rank/point cost)"))
-        ]),
-        _("tr", {}, [
-            tableHeading({"rowspan": "2"}, tx("Class")),
-            tableHeading({"rowspan": "2"}, tx("Character")),
-            tableHeading({"colspan": "2"}, tx("Adjust")),
-            tableHeading({"rowspan": "2"}, tx("EC")),
-            tableHeading({"rowspan": "2"}, tx("Atk")),
-            tableHeading({"colspan": "3"}, tx("Saves")),
-            tableHeading({"rowspan": "2"}, tx("Def")),
-            tableHeading({"rowspan": "2"}, tx("Rep")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Autohypnosis")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Balance")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Bluff")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Climb")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Computer Use")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Concentration")),
-            tableHeading({"colspan": "14"}, tx("Craft")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Decipher Script")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Demolitions")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Diplomacy")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Disable Device")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Disguise")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Drive")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Escape Artist")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Forgery")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Gamble")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Gather Information")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Handle Animal")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Hide")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Intimidate")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Investigate")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Jump")),
-            tableHeading({"colspan": "28"}, tx("Knowledge")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Listen")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Move Silently")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Navigate")),
-            tableHeading({"colspan": "16"}, tx("Perform")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Pilot")),
-            tableHeading({"colspan": "2"}, [tx("Profession"), addProfessionButton]).css({"white-space": "nowrap"}),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Psicraft")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Read/Write Language")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Repair")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Research")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Ride")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Search")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Sense Motive")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Sleight of Hand")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Speak Language")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Spellcraft")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Spot")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Survival")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Swim")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Treat Injury")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Tumble")),
-            tableHeading({"rowspan": "2", "colspan": "2"}, tx("Use Magic Device"))
-        ]),
-        _("tr", {}, [
-            tableHeading({}, tx("Total")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Str")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Dex")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Con")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Int")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Wis")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Cha")),
-            tableHeading({}, tx("\u0394")),
-            tableHeading({}, tx("Roll")),
-            tableHeading({}, tx("Total")),
-            tableHeading({}, tx("Fort")),
-            tableHeading({}, tx("Ref")),
-            tableHeading({}, tx("Will")),
-            tableHeading({}, tx("Bonus")),
-            tableHeading({}, tx("Total")),
-            tableHeading({}, tx("Unspent")),
-            tableHeading({"colspan": "2"}, tx("chemical")),
-            tableHeading({"colspan": "2"}, tx("electronic")),
-            tableHeading({"colspan": "2"}, tx("mechanical")),
-            tableHeading({"colspan": "2"}, tx("pharmaceutical")),
-            tableHeading({"colspan": "2"}, tx("structural")),
-            tableHeading({"colspan": "2"}, tx("visual art")),
-            tableHeading({"colspan": "2"}, tx("writing")),
-            tableHeading({"colspan": "2"}, tx("arcane lore")),
-            tableHeading({"colspan": "2"}, tx("art")),
-            tableHeading({"colspan": "2"}, tx("behavior sciences")),
-            tableHeading({"colspan": "2"}, tx("business")),
-            tableHeading({"colspan": "2"}, tx("civics")),
-            tableHeading({"colspan": "2"}, tx("current events")),
-            tableHeading({"colspan": "2"}, tx("earth and life sciences")),
-            tableHeading({"colspan": "2"}, tx("history")),
-            tableHeading({"colspan": "2"}, tx("physical sciences")),
-            tableHeading({"colspan": "2"}, tx("popular culture")),
-            tableHeading({"colspan": "2"}, tx("streetwise")),
-            tableHeading({"colspan": "2"}, tx("tactics")),
-            tableHeading({"colspan": "2"}, tx("technology")),
-            tableHeading({"colspan": "2"}, tx("theology and philosophy")),
-            tableHeading({"colspan": "2"}, tx("act")),
-            tableHeading({"colspan": "2"}, tx("dance")),
-            tableHeading({"colspan": "2"}, tx("keyboards")),
-            tableHeading({"colspan": "2"}, tx("percussion instruments")),
-            tableHeading({"colspan": "2"}, tx("sing")),
-            tableHeading({"colspan": "2"}, tx("stand-up")),
-            tableHeading({"colspan": "2"}, tx("stringed instruments")),
-            tableHeading({"colspan": "2"}, tx("wind instruments")),
-            tableHeading({"colspan": "2"}, [removeProfessionButton, textField().css({"width": "6em"})]).css({"white-space": "nowrap"})
-        ])
+        _("tr", {}, headerRow1),
+        _("tr", {}, headerRow2),
+        _("tr", {}, headerRow3)
     ]);
-    // table heading complete! -------------------------------------------------
+    // table header complete! -------------------------------------------------
 
     // racial adjustments row start --------------------------------------------
     var destination = null;
     var accessors = {};
+    var skillRanks = {};
     var laChangeUi = fitCell(modifierField());
     var totalLevelAdjustmentDisplay = modifierDisplay();
     var charAdjustUi = textArea().css({"vertical-align": "top"});
@@ -1548,7 +2005,7 @@ $(document).ready(function() {
     var abilityScoreCells = $();
     var adjustedAbilities = {};
 
-    nameLoop(function(name) {
+    abilityNameLoop(function(name) {
 
         adjustedAbilities[name] = {
             "field": fitCell(modifierField()),
@@ -1596,7 +2053,8 @@ $(document).ready(function() {
         tableCell()
     ).prop({
 
-        "accessors": accessors
+        "accessors": accessors,
+        "skillRanks": skillRanks
 
     });
 
@@ -1621,20 +2079,33 @@ $(document).ready(function() {
 
     }
 
-    for (var name in skills) {
+    var profCells = [];
 
-//        $rowUi.append(appendText(wholeNumberDisplay(), "\u2211"),
-//                appendText(wholeNumberDisplay(), "$"));
-        $rowUi.append([
-                // ability score
-                tableCell({}, appendText(wholeNumberDisplay(), "\u2211")),
-                // increase or decrease
-                tableCell({}, appendText(wholeNumberDisplay(), "$"))
-            ])
+    countProfessions = function() {
+
+        return profCells.length;
 
     }
 
+    skillNameLoop(function (name){
+
+        var cells = [
+            // ranks
+            tableCell({}, appendText(wholeNumberDisplay(), "\u2211")),
+            // cost
+            tableCell({}, appendText(wholeNumberDisplay(), "$"))
+        ];
+
+        if (name == "pr") {
+            profCells.push({"rank": cells[0], "cost": cells[1]});
+        }
+
+        $rowUi.append(cells);
+
+    });
+
     var rowUi = $rowUi[0];
+    //tableRows.push($rowUi);
 
     // data accessors ------------------------------------------------------
     accessors["getClassAndCharacterLevel"] = function() {
@@ -1654,7 +2125,7 @@ $(document).ready(function() {
 
     };
 
-    nameLoop(function(name, getName, changeName) {
+    abilityNameLoop(function(name, getName, changeName) {
 
         var adjustedAbility = adjustedAbilities[name];
         var field = adjustedAbility["field"];
@@ -1689,6 +2160,12 @@ $(document).ready(function() {
     }
 
     accessors["getTotalSkillPoints"] = function() {
+
+        return 0;
+
+    }
+
+    skillRanks["getTotalRanks"] = function() {
 
         return 0;
 
@@ -1731,9 +2208,10 @@ $(document).ready(function() {
         ])
     );
 
-    for (var name in changeHandlers) {
-        changeHandlers[name]();
-    }
+    propLoop(changeHandlers, function(name, changeHandler) {
+        changeHandler();
+    });
+
     // racial adjustments row complete! ----------------------------------------
 
     function getLastRow() {
@@ -1751,46 +2229,48 @@ $(document).ready(function() {
         return row;
     }
 
-    accessors["setDestination"](rowFields());
+    accessors["setDestination"](row());
 
-    var tableRows = _("tbody", {}, [
+    var tbodyRows = _("tbody", {}, [
         destination
     ]).sortable({
         start: function(e, ui) {
 
-            var prev = ui.item.prev();
+            var row = ui.item;
+            var prev = row.prev();
             var src = prev.length == 0 ? rowUi : prev[0];
             // The helper row is created and inserted after this row before start is called.
-            var next = ui.item.next().next();
+            var next = row.next().next();
             var dest = next.length == 0 ? null : next[0];
             src["accessors"]["setDestination"](dest);
 
             if (dest != null) {
-                for (var name in dest["changeHandlers"]) {
-                    dest["changeHandlers"][name]();
-                }
+                propLoop(dest["changeHandlers"], function(name, changeHandler) {
+                    changeHandler();
+                });
             }
         },
         stop: function(e, ui) {
 
-            var prev = ui.item.prev();
+            var row = ui.item;
+            var prev = row.prev();
             var src = prev.length == 0 ? rowUi : prev[0];
-            var next = ui.item.next();
+            var next = row.next();
             var dest = next.length == 0 ? null : next[0];
-            var current = ui.item[0];
+            var current = row[0];
             src["accessors"]["setDestination"](current);
             current["accessors"]["setDestination"](dest);
 
-            for (var name in current["changeHandlers"]) {
-                current["changeHandlers"][name]();
-            }
+            propLoop(current["changeHandlers"], function(name, changeHandler) {
+                changeHandler();
+            });
 
         }
     });
 
     var table = _("table", {}, [
         stickyRows,
-        tableRows
+        tbodyRows
     ]).css({"position": "relative", "border-collapse": "collapse"});
 
     var tableContainer = _("div", {}, [
@@ -1804,14 +2284,14 @@ $(document).ready(function() {
             tableContainer,
             _("div", {}, [_("button", {}, tx("Add Row")).click(function() {
 
-                var newRow = rowFields();
+                var newRow = row();
                 getLastRow()["accessors"]["setDestination"](newRow);
 
-                for (var name in newRow["changeHandlers"]) {
-                    newRow["changeHandlers"][name]();
-                }
+                propLoop(newRow["changeHandlers"], function(name, changeHandler) {
+                    changeHandler();
+                });
 
-                tableRows.append(newRow);
+                tbodyRows.append(newRow);
 
                 adjustMinWidths();
 
@@ -1819,30 +2299,20 @@ $(document).ready(function() {
         ]).css({"display": "flex", "flex-flow": "column", "height": "100%"})
     ).css({"height": "100%", "margin": "0px"});;
 
-    for (var name in destination["changeHandlers"]) {
-        destination["changeHandlers"][name]();
-    }
-
-    // CSS helpers
-    tableContainer.css({"min-height": table.height() + 15 + "px"});
-
-    stickyRows.children().children().each(function(ndx, elem) {
-        var $elem = $(elem);
-        $elem.css({"position": "sticky", "top": $elem.position().top + "px", "background": "white"});
+    propLoop(destination["changeHandlers"], function(name, changeHandler) {
+        changeHandler();
     });
 
-    // Inside table cells the min-width should be based on the content width.
-    // However, the fill width should be based on the content plus borders and
-    // padding. CSS does not have a way to accomplish this so this function
-    // helps out.
-    function adjustMinWidths() {
+    // CSS helpers
+    tableContainer.css({"min-height": table.height() + scrollbarHeight + "px"});
 
-        while (adHocFixQueue.length > 0) {
-            $elem = adHocFixQueue.pop();
-            $elem.css("min-width", parseInt($elem.css("min-width").slice(0, -2)) + $elem.outerWidth() - $elem.width() + "px");
-        }
-
+    function makeSticky(elem) {
+        elem.css({"position": "sticky", "top": elem.position().top + "px", "background": "white"});
     }
+
+    stickyRows.children().children().each(function(ndx, elem) {
+        makeSticky($(elem));
+    });
 
     adjustMinWidths();
 
